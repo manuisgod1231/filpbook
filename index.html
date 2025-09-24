@@ -7,8 +7,24 @@
 <style>
 body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin:0; background:#f0f0f0; padding:20px; }
 h1 { text-align:center; }
-.flipbook { width: 400px; height: 600px; perspective: 1500px; position: relative; margin-top: 20px; }
-.page { width: 100%; height: 100%; position: absolute; backface-visibility: hidden; transition: transform 0.8s ease; display: flex; align-items: center; justify-content: center; border:1px solid #ccc; border-radius:5px; background:#fff; }
+.flipbook {
+  width: 400px; height: 600px;
+  perspective: 1500px;
+  position: relative;
+  margin-top: 20px;
+}
+.page {
+  width: 100%; height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 0.8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border:1px solid #ccc; border-radius:5px;
+  background:#fff;
+  transform-style: preserve-3d;
+}
 canvas { width: 100%; height: 100%; }
 .controls { margin-top: 10px; }
 button { padding:8px 15px; margin:0 5px; font-size:16px; }
@@ -27,7 +43,6 @@ button { padding:8px 15px; margin:0 5px; font-size:16px; }
   <button id="next">Next</button>
 </div>
 
-<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.12.313/pdf.min.js"></script>
 <script>
 let current = 0;
@@ -38,7 +53,7 @@ const nextBtn = document.getElementById('next');
 const prevBtn = document.getElementById('prev');
 const resultDiv = document.getElementById('result');
 
-// Load PDF and render flipbook
+// Load PDF
 fileInput.addEventListener('change', async (e)=>{
   const file = e.target.files[0];
   if(!file) return alert('Select a PDF');
@@ -52,7 +67,7 @@ fileInput.addEventListener('change', async (e)=>{
   reader.readAsArrayBuffer(file);
 });
 
-// Render PDF pages to flipbook
+// Render PDF pages
 async function renderPDF(pdf){
   flipbook.innerHTML = '';
   pages = [];
@@ -64,11 +79,11 @@ async function renderPDF(pdf){
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     const context = canvas.getContext('2d');
-    await page.render({canvasContext:context, viewport}).promise;
+    await page.render({canvasContext: context, viewport}).promise;
 
     const pageDiv = document.createElement('div');
     pageDiv.className='page';
-    if(i!==1) pageDiv.style.transform='rotateY(180deg)';
+    pageDiv.style.transform = i===1 ? 'rotateY(0deg)' : 'rotateY(180deg)';
     pageDiv.appendChild(canvas);
     flipbook.appendChild(pageDiv);
     pages.push(pageDiv);
